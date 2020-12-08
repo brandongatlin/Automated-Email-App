@@ -9,7 +9,7 @@ import os
 from dotenv import load_dotenv
 project_folder = os.path.expanduser('~/github/pro/Automated-Email-App')  # adjust as appropriate
 load_dotenv(os.path.join(project_folder, '.env'))
-pw = os.getenv("PW")
+pw = os.getenv("apw")
 
 # daily check for conf email
 googler = Googler()
