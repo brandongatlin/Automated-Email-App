@@ -11,6 +11,8 @@ project_folder = os.path.expanduser('~/github/pro/Automated-Email-App')  # adjus
 load_dotenv(os.path.join(project_folder, '.env'))
 pw = os.getenv("apw")
 
+central_support = 'centraltutorsupport@bootcampspot.com'
+
 # daily check for conf email
 googler = Googler()
 googler.authenticate()
@@ -31,8 +33,8 @@ for student in future_sessions_data:
       email = EmailMessage()
       email['Subject'] = confirmation_subject(get_day_name(session_datetime.weekday()), session_datetime.month, session_datetime.day, session_time, get_formatted_tz(tz_offset))
       email['From'] = 'brandongatlin.81@gmail.com'
-      # email['To'] = current_students_emails
-      email['To'] = ['brandongatlin.81@gmail.com'] # testing
+      email['To'] = student_email
+      email['Cc'] = central_support
       email.set_content(confirmation_body(first_name, get_day_name(session_datetime.weekday()), session_datetime.month, session_datetime.day, session_time, get_formatted_tz(tz_offset), zoom_link), subtype='html')
       connection.starttls()
       connection.login(user='brandongatlin.81@gmail.com', password=pw)
@@ -40,16 +42,15 @@ for student in future_sessions_data:
 
 # weekly spam email
 weekday = datetime.now().weekday()
-# if weekday == 7:
-if weekday > -1: # always true for testing
+if weekday == 7:
   googler.scrape_current()
   current_students_emails = googler.current_students
   with smtplib.SMTP(host='smtp.gmail.com', port=587) as connection:
     email = EmailMessage()
     email['Subject'] = weekly_subject()
     email['From'] = 'brandongatlin.81@gmail.com'
-    # email['To'] = current_students_emails
-    email['To'] = ['brandongatlin.81@gmail.com'] # testing
+    email['To'] = ', '.join(current_students_emails)
+    email['Cc'] = central_support
     email.set_content(weekly_body(), subtype='html')
     connection.starttls()
     connection.login(user='brandongatlin.81@gmail.com', password=pw)
