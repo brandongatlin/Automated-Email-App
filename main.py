@@ -25,7 +25,7 @@ for student in future_sessions_data:
   zoom_link = student[5]
   tz_offset = int(student[3])
   session_date = student[2]
-  session_time = student[4]
+  session_time = student[4] + tz_offset # in student TZ
   d = session_date.split('/')
   session_datetime = datetime(year=int(d[2]), month=int(d[0]), day=int(d[1]))
   if tomorrow.day == session_datetime.day:
