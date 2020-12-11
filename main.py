@@ -1,6 +1,5 @@
 from Googler import Googler
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 import smtplib
 from email.message import EmailMessage
 from Message import *
@@ -25,7 +24,9 @@ for student in future_sessions_data:
   zoom_link = student[5]
   tz_offset = int(student[3])
   session_date = student[2]
-  session_time = student[4] + tz_offset # in student TZ
+  session_time = datetime.strptime(student[4], '%I:%M %p')
+  session_time = session_time + timedelta(hours=tz_offset)
+  session_time = session_time.strftime('%-I:%M %p')
   d = session_date.split('/')
   session_datetime = datetime(year=int(d[2]), month=int(d[0]), day=int(d[1]))
   if tomorrow.day == session_datetime.day:
