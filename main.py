@@ -43,14 +43,15 @@ for student in future_sessions_data:
 
 # weekly spam email
 weekday = datetime.now().weekday()
-if weekday == 7:
+if weekday == 6:
   googler.scrape_current()
   current_students_emails = googler.current_students
+  current_students_emails_formatted = [addr[0] for addr in current_students_emails]
   with smtplib.SMTP(host='smtp.gmail.com', port=587) as connection:
     email = EmailMessage()
     email['Subject'] = weekly_subject()
     email['From'] = 'brandongatlin.81@gmail.com'
-    email['To'] = ', '.join(current_students_emails)
+    email['To'] = ', '.join(current_students_emails_formatted)
     email['Cc'] = central_support
     email.set_content(weekly_body(), subtype='html')
     connection.starttls()
