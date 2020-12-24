@@ -17,7 +17,6 @@ class Googler:
 
   def authenticate(self):
     root = os.path.dirname(__file__)
-    print(root)
     pickle_path = f'{root}/token.pickle'
     creds_path = f'{root}/credentials.json'
     creds = None
