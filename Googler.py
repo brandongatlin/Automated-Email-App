@@ -16,9 +16,13 @@ class Googler:
       self.current_students = []
 
   def authenticate(self):
+    root = os.path.dirname(__file__)
+    print(root)
+    pickle_path = f'{root}/token.pickle'
+    creds_path = f'{root}/credentials.json'
     creds = None
-    if os.path.exists('/home/brandongatlin/Automated-Email-App/token.pickle'):
-      with open('/home/brandongatlin/Automated-Email-App/token.pickle', 'rb') as token:
+    if os.path.exists(pickle_path):
+      with open(pickle_path, 'rb') as token:
           creds = pickle.load(token)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
@@ -26,10 +30,10 @@ class Googler:
         creds.refresh(Request())
       else:
         flow = InstalledAppFlow.from_client_secrets_file(
-            '/home/brandongatlin/Automated-Email-App/credentials.json', self.scopes)
+            creds_path, self.scopes)
         creds = flow.run_local_server(port=0)
       # Save the credentials for the next run
-      with open('/home/brandongatlin/Automated-Email-App/token.pickle', 'wb') as token:
+      with open(pickle_path, 'wb') as token:
           pickle.dump(creds, token)
     self.creds = creds
 
