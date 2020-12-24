@@ -6,10 +6,8 @@ from Message import *
 
 import os
 from dotenv import load_dotenv
-project_folder = os.path.expanduser(os.getcwd())  # adjust as appropriate
-load_dotenv(os.path.join(project_folder, '.env'))
+load_dotenv(f'/home/brandongatlin/Automated-Email-App/.env')
 pw = os.getenv("apw")
-
 me = 'brandongatlin.81@gmail.com'
 central_support = 'centraltutorsupport@bootcampspot.com'
 
@@ -36,7 +34,7 @@ for student in future_sessions_data:
       email['Subject'] = confirmation_subject(get_day_name(session_datetime.weekday()), session_datetime.month, session_datetime.day, session_time, get_formatted_tz(tz_offset))
       email['From'] = me
       email['To'] = student_email
-      email['Cc'] = central_support
+    #   email['Cc'] = central_support
       email.set_content(confirmation_body(first_name, get_day_name(session_datetime.weekday()), session_datetime.month, session_datetime.day, session_time, get_formatted_tz(tz_offset), zoom_link), subtype='html')
       connection.starttls()
       connection.login(user=me, password=pw)
