@@ -84,5 +84,7 @@ if weekday == 6:
     connection.starttls()
     connection.login(user=me, password=google_pw)
     connection.send_message(email)
+    for addr in current_students_emails_formatted:
+      db.query(f"INSERT INTO logs (recipients, type, time_stamp) VALUES ('{addr}', 'weekly', '{datetime.now()}');")
 
 db.close()
