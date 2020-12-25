@@ -3,13 +3,26 @@ from datetime import datetime, timedelta
 import smtplib
 from email.message import EmailMessage
 from Message import *
-
-import os
+import os, sys
 from dotenv import load_dotenv
-root = os.path.dirname(__file__)
+from MySQLdb import _mysql
+
+root = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(f'{root}/.env')
-pw = os.getenv('apw')
+env = os.getenv('env')
+mysql_host = os.getenv('mysql_host')
+mysql_db = os.getenv('mysql_db')
+mysql_user = os.getenv('mysql_user')
+mysql_password = os.getenv('mysql_password')
+try:
+  db=_mysql.connect(host=mysql_host, user=mysql_user, passwd=mysql_password, db=mysql_db)
+except Exception as e:
+  print(e)
+  sys.exit()
+
+google_pw = os.getenv('apw')
 me = 'brandongatlin.81@gmail.com'
+alt_me = 'brandongatlin1981@me.com'
 central_support = 'centraltutorsupport@bootcampspot.com'
 
 # daily check for conf email
@@ -34,12 +47,22 @@ for student in future_sessions_data:
       email = EmailMessage()
       email['Subject'] = confirmation_subject(get_day_name(session_datetime.weekday()), session_datetime.month, session_datetime.day, session_time, get_formatted_tz(tz_offset))
       email['From'] = me
-      email['To'] = student_email
-      email['Cc'] = central_support
+      if env == 'prod':
+        email['To'] = student_email
+      else:
+        email['To'] = alt_me
+      if env == 'prod':
+        email['Cc'] = central_support
       email.set_content(confirmation_body(first_name, get_day_name(session_datetime.weekday()), session_datetime.month, session_datetime.day, session_time, get_formatted_tz(tz_offset), zoom_link), subtype='html')
       connection.starttls()
-      connection.login(user=me, password=pw)
+      connection.login(user=me, password=google_pw)
       connection.send_message(email)
+      db.query(f"""
+             INSERT INTO logs(recipients, type, time_stamp) VALUES(
+               '{student_email}', 'confirmation', '{datetime.now()}' 
+               );
+             """)
+
 
 # weekly spam email
 weekday = datetime.now().weekday()
@@ -51,9 +74,15 @@ if weekday == 6:
     email = EmailMessage()
     email['Subject'] = weekly_subject()
     email['From'] = me
-    email['To'] = ', '.join(current_students_emails_formatted)
-    email['Cc'] = central_support
+    if env == 'prod':
+      email['To'] = ', '.join(current_students_emails_formatted)
+    else:
+      email['To'] = alt_me
+    if env == 'prod':
+      email['Cc'] = central_support
     email.set_content(weekly_body(), subtype='html')
     connection.starttls()
-    connection.login(user=me, password=pw)
+    connection.login(user=me, password=google_pw)
     connection.send_message(email)
+
+db.close()
